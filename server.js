@@ -50,6 +50,27 @@ app.get('/api/workflows', (req, res) => {
   res.json(getWorkflows());
 });
 
+// ── API: get raw yaml content ─────────────────────────────────
+app.get('/api/workflow-content', (req, res) => {
+  const file = req.query.file;
+  if (!file || !file.startsWith('workflows/')) return res.status(400).json({ error: 'Invalid file' });
+  const full = path.join(__dirname, file);
+  res.json({ content: fs.readFileSync(full, 'utf8') });
+});
+
+// ── API: save yaml content ────────────────────────────────────
+app.post('/api/workflow-content', express.json(), (req, res) => {
+  const { file, content } = req.body;
+  if (!file || !file.startsWith('workflows/')) return res.status(400).json({ error: 'Invalid file' });
+  try {
+    yaml.load(content); // validate before saving
+    fs.writeFileSync(path.join(__dirname, file), content, 'utf8');
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(400).json({ error: 'Invalid YAML: ' + e.message });
+  }
+});
+
 // ── API: run a workflow (streams output via SSE) ──────────────
 app.get('/api/run', (req, res) => {
   const file = req.query.file;

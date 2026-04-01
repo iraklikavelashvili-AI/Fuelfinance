@@ -132,6 +132,94 @@
       margin-top: 1px;
     }
 
+    .btn-edit {
+      background: none;
+      color: #64748b;
+      border: 1.5px solid #e2e8f0;
+      padding: 0 16px;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-edit:hover { border-color: #94a3b8; color: #1e293b; }
+    .btn-edit.active { background: #f1f5f9; border-color: #94a3b8; color: #1e293b; }
+
+    .edit-panel {
+      display: none;
+      margin-top: 16px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 16px;
+    }
+    .edit-panel.open { display: block; }
+
+    .edit-panel label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .edit-panel textarea {
+      width: 100%;
+      height: 320px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #1e293b;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .edit-panel textarea:focus { border-color: #22c55e; }
+
+    .edit-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-save {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 0 20px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-save:hover { background: #15803d; }
+    .btn-cancel-edit {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0 8px;
+      height: 36px;
+    }
+    .btn-cancel-edit:hover { color: #64748b; }
+    .save-msg {
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+    }
+    .save-msg.ok  { color: #16a34a; }
+    .save-msg.err { color: #dc2626; }
+
     .btn-run {
       background: #16a34a;
       color: white;
@@ -263,11 +351,22 @@
           </div>
         </div>
         <div class="status-dot" id="dot-${wf.id}"></div>
+        <button class="btn-edit" id="editbtn-${wf.id}" onclick="toggleEdit('${wf.file}','${wf.id}')">✏️ Edit</button>
         <button class="btn-run" id="btn-${wf.id}" onclick="runWorkflow('${wf.file}','${wf.id}')">▶ RUN</button>
       </div>
 
       <div class="steps-list" id="steps-${wf.id}">
         <ol>${stepItems}</ol>
+      </div>
+
+      <div class="edit-panel" id="edit-${wf.id}">
+        <label>Edit steps — change names, actions, or values below, then click Save</label>
+        <textarea id="editarea-${wf.id}" spellcheck="false"></textarea>
+        <div class="edit-actions">
+          <button class="btn-save" onclick="saveWorkflow('${wf.file}','${wf.id}')">Save</button>
+          <button class="btn-cancel-edit" onclick="toggleEdit('${wf.file}','${wf.id}')">Cancel</button>
+          <span class="save-msg" id="savemsg-${wf.id}"></span>
+        </div>
       </div>
 
       <div class="log-wrap" id="wrap-${wf.id}">
@@ -276,6 +375,54 @@
       </div>
     `;
     return card;
+  }
+
+  async function toggleEdit(file, id) {
+    const panel  = document.getElementById('edit-' + id);
+    const btn    = document.getElementById('editbtn-' + id);
+    const area   = document.getElementById('editarea-' + id);
+    const msg    = document.getElementById('savemsg-' + id);
+    const isOpen = panel.classList.contains('open');
+
+    if (isOpen) {
+      panel.classList.remove('open');
+      btn.classList.remove('active');
+    } else {
+      msg.style.display = 'none';
+      const res = await fetch('/api/workflow-content?file=' + encodeURIComponent(file));
+      const data = await res.json();
+      area.value = data.content;
+      panel.classList.add('open');
+      btn.classList.add('active');
+      area.focus();
+    }
+  }
+
+  async function saveWorkflow(file, id) {
+    const area   = document.getElementById('editarea-' + id);
+    const msg    = document.getElementById('savemsg-' + id);
+    const panel  = document.getElementById('edit-' + id);
+
+    msg.style.display = 'none';
+    const res = await fetch('/api/workflow-content', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ file, content: area.value }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      msg.textContent = '✓ Saved!';
+      msg.className = 'save-msg ok';
+      msg.style.display = 'inline';
+      panel.classList.remove('open');
+      document.getElementById('editbtn-' + id).classList.remove('active');
+      load(); // refresh step counts
+    } else {
+      msg.textContent = '✗ ' + data.error;
+      msg.className = 'save-msg err';
+      msg.style.display = 'inline';
+    }
   }
 
   function toggleSteps(id, btn) {
