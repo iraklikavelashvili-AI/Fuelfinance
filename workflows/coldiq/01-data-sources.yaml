@@ -44,12 +44,12 @@ steps:
   - step: 6
     name: "Click the project dropdown (top-left)"
     action: click
-    selector: "[data-testid='project-switcher'], .project-switcher, .workspace-switcher"
+    selector: "[class*='switcher'], [class*='Switcher'], [class*='company'], [class*='Company'], [class*='workspace'], [class*='Workspace'], [class*='organization'], aside button, nav button:first-of-type"
 
   - step: 7
-    name: "Select ColdIQ from the list"
+    name: "Select Coldiq from the list"
     action: click
-    text: "ColdIQ"
+    text: "Coldiq"
 
   - step: 8
     name: "Wait for ColdIQ to load"
