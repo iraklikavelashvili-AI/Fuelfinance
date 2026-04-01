@@ -30,7 +30,7 @@ steps:
   - step: 4
     name: "Click Sign In"
     action: click
-    selector: "button[type='submit']"
+    selector: "button[type='submit'], button:has-text('Sign In'), button:has-text('Log in'), button:has-text('Login'), button:has-text('Continue')"
 
   - step: 5
     name: "Wait for dashboard to load"

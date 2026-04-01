@@ -48,7 +48,18 @@ async function runStep(page, raw) {
       if (step.text) {
         await page.click(`text=${step.text}`);
       } else {
-        await page.click(step.selector);
+        // try each comma-separated selector until one works
+        const selectors = step.selector.split(/,(?![^(]*\))/g).map(s => s.trim());
+        let clicked = false;
+        for (const sel of selectors) {
+          try {
+            await page.waitForSelector(sel, { timeout: 5000 });
+            await page.click(sel);
+            clicked = true;
+            break;
+          } catch (_) { /* try next */ }
+        }
+        if (!clicked) throw new Error(`No selector found: ${step.selector}`);
       }
       break;
     }
