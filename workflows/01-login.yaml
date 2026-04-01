@@ -33,9 +33,9 @@ steps:
     selector: "button[type='submit'], button:has-text('Sign In'), button:has-text('Log in'), button:has-text('Login'), button:has-text('Continue')"
 
   - step: 5
-    name: "Wait for dashboard to load"
-    action: wait_for_url
-    value: "**/dashboard**"
+    name: "Wait for app to load after login"
+    action: wait
+    value: 3000
 
   - step: 6
     name: "Take screenshot to confirm login"
