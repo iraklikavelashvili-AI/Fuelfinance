@@ -14,7 +14,6 @@
       min-height: 100vh;
     }
 
-    /* ── header ── */
     header {
       background: #0f172a;
       color: white;
@@ -38,10 +37,8 @@
     header h1 { font-size: 18px; font-weight: 600; }
     header p  { font-size: 13px; color: #64748b; margin-left: auto; }
 
-    /* ── layout ── */
     .container { max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
 
-    /* ── section label ── */
     .section-label {
       font-size: 11px;
       font-weight: 700;
@@ -52,7 +49,6 @@
     }
     .section-label:first-child { margin-top: 0; }
 
-    /* ── card ── */
     .card {
       background: white;
       border-radius: 14px;
@@ -81,11 +77,61 @@
     }
 
     .card-text { flex: 1; min-width: 0; }
-    .card-text h2 { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-text h2 { font-size: 15px; font-weight: 600; }
     .card-text p  { font-size: 13px; color: #64748b; margin-top: 2px; }
-    .card-meta    { font-size: 11px; color: #cbd5e1; margin-top: 5px; }
 
-    /* ── run button ── */
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .card-meta span { font-size: 11px; color: #cbd5e1; }
+    .steps-toggle {
+      font-size: 11px;
+      color: #22c55e;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .steps-toggle:hover { color: #16a34a; }
+
+    .steps-list {
+      display: none;
+      margin-top: 14px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 14px;
+    }
+    .steps-list.open { display: block; }
+    .steps-list ol {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .steps-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #475569;
+    }
+    .step-num {
+      width: 22px; height: 22px;
+      background: #f1f5f9;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
     .btn-run {
       background: #16a34a;
       color: white;
@@ -104,11 +150,10 @@
     .btn-run:hover:not(:disabled) { background: #15803d; transform: translateY(-1px); }
     .btn-run:active { transform: translateY(0); }
     .btn-run:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
-    .btn-run.running { background: #d97706; }
-    .btn-run.done-ok { background: #16a34a; }
+    .btn-run.running  { background: #d97706; }
+    .btn-run.done-ok  { background: #16a34a; }
     .btn-run.done-err { background: #dc2626; }
 
-    /* ── status indicator ── */
     .status-dot {
       width: 9px; height: 9px;
       border-radius: 50%;
@@ -118,10 +163,8 @@
     .status-dot.running { background: #f59e0b; animation: blink 0.9s infinite; }
     .status-dot.ok      { background: #22c55e; }
     .status-dot.err     { background: #ef4444; }
-
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-    /* ── log panel ── */
     .log-wrap { margin-top: 16px; display: none; }
     .log-wrap.open { display: block; }
 
@@ -134,9 +177,7 @@
       text-transform: uppercase;
       padding: 8px 14px;
       border-radius: 8px 8px 0 0;
-      display: flex; align-items: center; gap: 8px;
     }
-
     .log-box {
       background: #0f172a;
       border-radius: 0 0 8px 8px;
@@ -151,16 +192,13 @@
     .log-box .ok    { color: #4ade80; }
     .log-box .fail  { color: #f87171; }
     .log-box .head  { color: #38bdf8; }
-    .log-box .muted { color: #475569; }
+    .log-box .muted { color: #334155; }
 
-    /* scrollbar */
     .log-box::-webkit-scrollbar { width: 5px; }
     .log-box::-webkit-scrollbar-track { background: transparent; }
     .log-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
-    /* ── empty state ── */
     .empty { text-align: center; padding: 80px 0; color: #94a3b8; }
-    .empty h2 { font-size: 18px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -172,14 +210,11 @@
 </header>
 
 <div class="container" id="app">
-  <div class="empty"><h2>Loading workflows…</h2></div>
+  <div class="empty">Loading workflows…</div>
 </div>
 
 <script>
-  const FOLDER_LABELS = {
-    shared: 'Shared',
-  };
-
+  const FOLDER_LABELS = { shared: 'Shared' };
   function folderLabel(f) {
     return FOLDER_LABELS[f] || ('Project: ' + f.charAt(0).toUpperCase() + f.slice(1));
   }
@@ -190,11 +225,10 @@
     app.innerHTML = '';
 
     if (!wfs.length) {
-      app.innerHTML = '<div class="empty"><h2>No workflows found</h2><p>Add .yaml files to the workflows/ folder.</p></div>';
+      app.innerHTML = '<div class="empty">No workflows found. Add .yaml files to the workflows/ folder.</div>';
       return;
     }
 
-    // group by folder
     const groups = {};
     wfs.forEach(w => { (groups[w.folder] = groups[w.folder] || []).push(w); });
 
@@ -210,40 +244,56 @@
   function makeCard(wf) {
     const card = document.createElement('div');
     card.className = 'card';
-    card.id = 'card-' + wf.id;
+
+    const stepItems = (wf.stepList || [])
+      .map((name, i) => `<li><div class="step-num">${i + 1}</div><span>${name}</span></li>`)
+      .join('');
+
     card.innerHTML = `
       <div class="card-row">
         <div class="card-icon">⚡</div>
         <div class="card-text">
           <h2>${wf.name}</h2>
           <p>${wf.description || '—'}</p>
-          <div class="card-meta">${wf.steps} steps &nbsp;·&nbsp; ${wf.file}</div>
+          <div class="card-meta">
+            <span>${wf.steps} steps</span>
+            <span>·</span>
+            <span>${wf.file}</span>
+            <button class="steps-toggle" onclick="toggleSteps('${wf.id}', this)">Show steps</button>
+          </div>
         </div>
         <div class="status-dot" id="dot-${wf.id}"></div>
-        <button class="btn-run" id="btn-${wf.id}" onclick="runWorkflow('${wf.file}','${wf.id}')">
-          ▶ RUN
-        </button>
+        <button class="btn-run" id="btn-${wf.id}" onclick="runWorkflow('${wf.file}','${wf.id}')">▶ RUN</button>
       </div>
+
+      <div class="steps-list" id="steps-${wf.id}">
+        <ol>${stepItems}</ol>
+      </div>
+
       <div class="log-wrap" id="wrap-${wf.id}">
-        <div class="log-header">
-          <span id="log-status-${wf.id}">● Live output</span>
-        </div>
+        <div class="log-header"><span id="log-status-${wf.id}">● Live output</span></div>
         <div class="log-box" id="log-${wf.id}"></div>
       </div>
     `;
     return card;
   }
 
+  function toggleSteps(id, btn) {
+    const list = document.getElementById('steps-' + id);
+    const open = list.classList.toggle('open');
+    btn.textContent = open ? 'Hide steps' : 'Show steps';
+  }
+
   function classify(text) {
-    if (/✓/.test(text))           return 'ok';
-    if (/✗|ERROR/.test(text))     return 'fail';
-    if (/^={3,}/.test(text.trim())) return 'head';
-    if (!text.trim())             return 'muted';
+    if (/✓/.test(text))              return 'ok';
+    if (/✗|ERROR/.test(text))        return 'fail';
+    if (/^={3,}/.test(text.trim()))  return 'head';
+    if (!text.trim())                return 'muted';
     return '';
   }
 
-  function appendLog(boxId, text, cls) {
-    const box = document.getElementById(boxId);
+  function appendLog(id, text, cls) {
+    const box = document.getElementById('log-' + id);
     if (!box) return;
     const line = document.createElement('div');
     if (cls) line.className = cls;
@@ -271,10 +321,8 @@
 
     es.onmessage = e => {
       const { type, text } = JSON.parse(e.data);
-
-      if (type === 'log')   appendLog('log-' + id, text, classify(text));
-      if (type === 'error') appendLog('log-' + id, text, 'fail');
-
+      if (type === 'log')   appendLog(id, text, classify(text));
+      if (type === 'error') appendLog(id, text, 'fail');
       if (type === 'done') {
         es.close();
         const ok = text === 'success';

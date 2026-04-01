@@ -34,6 +34,7 @@ function getWorkflows() {
             name: wf.name || entry.name,
             description: wf.description || '',
             steps: Array.isArray(wf.steps) ? wf.steps.length : 0,
+            stepList: Array.isArray(wf.steps) ? wf.steps.map(s => s.name || '') : [],
           });
         } catch (_) { /* skip invalid yaml */ }
       }
