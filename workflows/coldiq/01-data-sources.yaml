@@ -30,9 +30,9 @@ steps:
     value: "${PASSWORD}"
 
   - step: 4
-    name: "Click Sign In"
-    action: click
-    selector: "button[type='submit'], button:has-text('Sign In'), button:has-text('Log in'), button:has-text('Login'), button:has-text('Continue')"
+    name: "Press Enter to sign in"
+    action: press
+    value: "Enter"
 
   - step: 5
     name: "Wait for app to load"
