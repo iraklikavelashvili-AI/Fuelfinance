@@ -41,3 +41,8 @@ steps:
     name: "Take screenshot to confirm login"
     action: screenshot
     value: "screenshots/01-logged-in.png"
+
+  - step: 7
+    name: "Keep browser open so you can see the result"
+    action: wait
+    value: 15000
