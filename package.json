@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Automated workflows for FuelFinance app",
   "scripts": {
-    "login": "node scripts/run.js workflows/01-login.yaml",
+    "login": "node scripts/run.js workflows/shared/login.yaml",
+    "coldiq:data-sources": "node scripts/run.js workflows/coldiq/01-data-sources.yaml",
     "run": "node scripts/run.js"
   },
   "dependencies": {

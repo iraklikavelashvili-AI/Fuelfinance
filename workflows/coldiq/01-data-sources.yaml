@@ -1,0 +1,79 @@
+# ─────────────────────────────────────────────────────────────
+# PROJECT: ColdIQ
+# WORKFLOW 01 — Login and go to Data Sources
+# ─────────────────────────────────────────────────────────────
+# Run:  node scripts/run.js workflows/coldiq/01-data-sources.yaml
+# ─────────────────────────────────────────────────────────────
+
+name: "ColdIQ — Login and open Data Sources"
+description: "Logs in, switches to ColdIQ project, opens Data Sources"
+
+steps:
+
+  # ── LOGIN ──────────────────────────────────────────────────
+
+  - step: 1
+    name: "Open login page"
+    action: navigate
+    value: "https://app.fuelfinance.me/login"
+
+  - step: 2
+    name: "Enter email"
+    action: fill
+    selector: "input[type='email'], input[name='email'], input[placeholder*='mail' i]"
+    value: "${EMAIL}"
+
+  - step: 3
+    name: "Enter password"
+    action: fill
+    selector: "input[type='password']"
+    value: "${PASSWORD}"
+
+  - step: 4
+    name: "Click Sign In"
+    action: click
+    selector: "button[type='submit'], button:has-text('Sign In'), button:has-text('Log in'), button:has-text('Login'), button:has-text('Continue')"
+
+  - step: 5
+    name: "Wait for app to load"
+    action: wait
+    value: 3000
+
+  # ── NAVIGATE TO COLDIQ PROJECT ─────────────────────────────
+
+  - step: 6
+    name: "Click the project dropdown (top-left)"
+    action: click
+    selector: "[data-testid='project-switcher'], .project-switcher, .workspace-switcher"
+
+  - step: 7
+    name: "Select ColdIQ from the list"
+    action: click
+    text: "ColdIQ"
+
+  - step: 8
+    name: "Wait for ColdIQ to load"
+    action: wait
+    value: 2000
+
+  # ── GO TO DATA SOURCES ─────────────────────────────────────
+
+  - step: 9
+    name: "Click Data Sources"
+    action: click
+    text: "Data sources"
+
+  - step: 10
+    name: "Wait for Data Sources page to load"
+    action: wait
+    value: 2000
+
+  - step: 11
+    name: "Take screenshot to confirm"
+    action: screenshot
+    value: "screenshots/coldiq-data-sources.png"
+
+  - step: 12
+    name: "Keep browser open to review"
+    action: wait
+    value: 15000

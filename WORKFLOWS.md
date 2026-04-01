@@ -12,40 +12,53 @@ npm install
 npx playwright install chromium
 cp .env.example .env
 # then edit .env and add your own email + password
+# IMPORTANT: if your password has special characters, wrap it in quotes:
+# PASSWORD="your-password-here"
 ```
 
 ---
 
-## How to run a workflow
+## Folder structure
 
-```bash
-node scripts/run.js workflows/01-login.yaml
-# or use the shortcut:
-npm run login
+```
+workflows/
+  shared/
+    login.yaml                    ← just the login steps
+  coldiq/
+    01-data-sources.yaml          ← login + go to ColdIQ > Data Sources
+  [next-client]/
+    01-something.yaml             ← add new folders per client
 ```
 
 ---
 
 ## All Workflows
 
+### Shared
 | # | File | What it does | Run command |
 |---|------|--------------|-------------|
-| 01 | `workflows/01-login.yaml` | Log in to FuelFinance | `npm run login` |
+| — | `shared/login.yaml` | Log in only | `npm run login` |
 
-> Add new rows here whenever you add a new workflow file.
+### ColdIQ
+| # | File | What it does | Run command |
+|---|------|--------------|-------------|
+| 01 | `coldiq/01-data-sources.yaml` | Login → ColdIQ → Data Sources | `npm run coldiq:data-sources` |
+
+> To add a new client: create a new folder under `workflows/` and add your `.yaml` files inside.
+> Add a new row to the table above so teammates can find it easily.
 
 ---
 
-## How to add a new step to a workflow
+## How to add a new step
 
-Open the relevant `.yaml` file and add a new block at the bottom.
-Each step follows this pattern:
+Open the relevant `.yaml` file in Notepad and add a block at the bottom.
+Copy any existing step and change the fields. Steps are numbered — just continue the count.
 
 ```yaml
 - step: 7
   name: "What this step does (plain English)"
   action: click
-  selector: "button.my-button"
+  text: "Button label visible on screen"
 ```
 
 ### Available actions
@@ -54,37 +67,39 @@ Each step follows this pattern:
 |--------|-------------|-----------------|
 | `navigate` | Go to a URL | `value: "https://..."` |
 | `fill` | Type into a field | `selector:`, `value:` |
-| `click` | Click an element | `selector:` or `text:` |
-| `wait_for_url` | Pause until URL matches | `value: "**/path**"` |
+| `click` | Click something by CSS | `selector:` |
+| `click` | Click something by visible text | `text:` |
 | `wait` | Pause for N milliseconds | `value: 2000` |
+| `wait_for_url` | Wait until URL matches pattern | `value: "**/path**"` |
 | `screenshot` | Save a screenshot | `value: "screenshots/name.png"` |
 | `select` | Pick from a dropdown | `selector:`, `value:` |
 | `press` | Press a keyboard key | `value: "Enter"` |
 
 ### Finding selectors
 
-The easiest way: right-click any element in Chrome → **Inspect** →
+Right-click any element in Chrome → **Inspect** →
 right-click the highlighted HTML → **Copy** → **Copy selector**.
+Paste as the `selector:` value.
 
-Paste that as the `selector:` value in your step.
+For buttons and links it's usually easier to use `text:` with the exact label you see on screen.
 
 ---
 
 ## Credentials
 
-Each person stores their own credentials in a **local `.env` file** (never committed to Git).
+Each person stores their own credentials in a local `.env` file (never shared via Git).
 
 ```
 EMAIL=your-email@fuelfinance.me
-PASSWORD=your-password
+PASSWORD="your-password"
 ```
 
-In workflow files, write `${EMAIL}` and `${PASSWORD}` — the runner substitutes them automatically.
+In workflow files, write `${EMAIL}` and `${PASSWORD}` — the runner fills them in automatically.
 
 ---
 
 ## Sharing workflows with teammates
 
-1. Workflow `.yaml` files are committed to Git — teammates pull and get them automatically.
+1. Workflow `.yaml` files are in Git — teammates pull and get them automatically.
 2. Each teammate creates their own `.env` with their credentials.
-3. Everyone runs the same workflow, with their own login.
+3. Everyone runs the same workflow with their own login.
