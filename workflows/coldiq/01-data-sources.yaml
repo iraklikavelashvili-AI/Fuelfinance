@@ -69,11 +69,26 @@ steps:
     value: 2000
 
   - step: 11
-    name: "Take screenshot to confirm"
-    action: screenshot
-    value: "screenshots/coldiq-data-sources.png"
+    name: "Check QB is connected"
+    action: check_visible
+    text: "QB"
 
   - step: 12
+    name: "Click Import for QB"
+    action: click
+    selector: "button:has-text('Import')"
+
+  - step: 13
+    name: "Wait for import to start"
+    action: wait
+    value: 3000
+
+  - step: 14
+    name: "Take screenshot to confirm import triggered"
+    action: screenshot
+    value: "screenshots/coldiq-qb-import.png"
+
+  - step: 15
     name: "Keep browser open to review"
     action: wait
     value: 15000

@@ -78,6 +78,16 @@ async function runStep(page, raw) {
       console.log(`     → saved to ${step.value}`);
       break;
 
+    case 'check_visible': {
+      const locator = step.text
+        ? page.getByText(step.text, { exact: false })
+        : page.locator(step.selector);
+      await locator.waitFor({ state: 'visible', timeout: 10000 });
+      const found = step.text || step.selector;
+      process.stdout.write(`     → confirmed visible: "${found}" `);
+      break;
+    }
+
     case 'select':
       await page.selectOption(step.selector, step.value);
       break;
