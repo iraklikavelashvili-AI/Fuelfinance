@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────
+# WORKFLOW 01 — Login to FuelFinance
+# ─────────────────────────────────────────────────────────────
+# Run:  npm run login
+#       node scripts/run.js workflows/01-login.yaml
+# ─────────────────────────────────────────────────────────────
+
+name: "Login to FuelFinance"
+description: "Opens the app and signs in with your credentials from .env"
+
+steps:
+
+  - step: 1
+    name: "Open login page"
+    action: navigate
+    value: "https://app.fuelfinance.me/login"
+
+  - step: 2
+    name: "Enter email"
+    action: fill
+    selector: "input[type='email'], input[name='email'], input[placeholder*='mail' i]"
+    value: "${EMAIL}"
+
+  - step: 3
+    name: "Enter password"
+    action: fill
+    selector: "input[type='password']"
+    value: "${PASSWORD}"
+
+  - step: 4
+    name: "Click Sign In"
+    action: click
+    selector: "button[type='submit']"
+
+  - step: 5
+    name: "Wait for dashboard to load"
+    action: wait_for_url
+    value: "**/dashboard**"
+
+  - step: 6
+    name: "Take screenshot to confirm login"
+    action: screenshot
+    value: "screenshots/01-logged-in.png"

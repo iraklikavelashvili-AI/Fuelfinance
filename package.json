@@ -1,0 +1,14 @@
+{
+  "name": "fuelfinance-workflows",
+  "version": "1.0.0",
+  "description": "Automated workflows for FuelFinance app",
+  "scripts": {
+    "login": "node scripts/run.js workflows/01-login.yaml",
+    "run": "node scripts/run.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "js-yaml": "^4.1.0",
+    "playwright": "^1.44.0"
+  }
+}
